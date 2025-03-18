@@ -1,4 +1,4 @@
-import random
+    import random, time
 global bet
 bet = 0
 global balance
@@ -39,15 +39,18 @@ def Deposit() -> int:
 
 def Bet():
     global bet
+    global balance
     while True:
         bet = input("Please enter the amount you'd like to bet? $")
         if bet.isdigit():
-            if balance > int(bet) > 0:
+            if balance >= int(bet) > 0:
                 bet = int(bet)
+                balance = balance - bet
                 break
             else: print(f"Error: Please enter a number in range 1-{balance}")
         else: print("Error: Please enter a number. ")
     return bet
+
 
 def TypeOfBet():
     while True:
@@ -61,7 +64,7 @@ def TypeOfBet():
                 print("Error: Enter a valid number.")
         else:
             print("Error: Enter a number.")
-    return des
+    return str(des)
 
 def izberi_karti(karte):
 
@@ -78,16 +81,48 @@ def Baccarat():
         igralec_vsota = igralec_vsota % 10
     if banker_vsota > 9:
         banker_vsota = banker_vsota % 10
-    
-    
-    return igralec_karte,igralec_vsota,banker_karte,banker_vsota
+    for _ in range(3):
+        print("Dealing...")
+        time.sleep(1)
 
+    print(f"Karte igralca: {igralec_karte}, igralec ima: {igralec_vsota}")
+    time.sleep(0.6)
+    print(f"Karte bankera: {banker_karte}, banker ima: {banker_vsota}.")
+    if igralec_vsota > banker_vsota:
+        return "1"
+    elif banker_vsota > igralec_vsota:
+        return "2"
+    else:
+        return "3"
 
+def WoL(playerBet, Roll):
+    global balance
+    global bet
+    if playerBet == Roll and Roll == "3":
+        balance += (6*bet)
+        Roll = "Tie"
+    elif Roll == "3" and playerBet != "3":
+        balance += bet
+    elif Roll == playerBet and Roll == "2":
+        balance += (1.95*bet)
+        Roll = "Banker"
+    elif Roll == playerBet:
+        balance += (2*bet)
+        Roll = "Player"
+    else:
+        print(f"You have lost. The deal was {Roll}. :(")
+        print(f"New balance: ${balance}")
+        return None
+    print(f"You have won! The deal was {Roll}. :D")
+    print(f"New balance: ${balance}")
 
 def main():
     Deposit()
-    print(TypeOfBet())
+    PlayerBet = TypeOfBet()
     Bet()
-    Baccarat()
-    
+    roll = Baccarat()
+    WoL(PlayerBet, roll)
 main()
+
+
+
